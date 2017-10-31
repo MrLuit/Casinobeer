@@ -5,7 +5,6 @@ const Random = require('random-js');
 const crypto = require('crypto');
 const fs = require('fs');
 const client = new Discord.Client();
-const token = "";
 var db = {};
 
 function randomWithProbability(probability,seed) {
@@ -36,10 +35,9 @@ function registerBet(user,probability,amount) {
 }
 
 function regenerateServerSeed(callback) {
-	request('https://www.random.org/strings/?num=1&len=20&digits=on&upperalpha=on&loweralpha=on&unique=off&format=html&rnd=new',function(err,response,body) {
+	request('https://www.random.org/strings/?num=100&len=20&digits=on&upperalpha=on&loweralpha=on&unique=off&format=plain&rnd=new',function(err,response,data) {
 		if(response.statusCode == 200) {
-			data = body.split('<pre class="data">\n')[1].split("\n")[0];
-			db.server_seed = crypto.createHash('sha256').update(data).digest('hex');
+			db.server_seed = crypto.createHash('sha256').update(data.replace(/\n|\r/g, "")).digest('hex');
 			callback();
 		} else {
 			console.log("Error bij genereren van nieuwe server seed");
@@ -49,9 +47,7 @@ function regenerateServerSeed(callback) {
 }
 
 function updateBalance(user_id,amount) {
-	console.log(user_id);
 	user_id = parseInt(user_id.toString().replace(/\D/g,''));
-	console.log(user_id);
 	if(user_id in db.users || user_id.toString() in db.users) {
 		db.users[user_id].balance += amount;
 	} else {
@@ -59,7 +55,7 @@ function updateBalance(user_id,amount) {
 			'client_seed': crypto.createHash('sha256').update(user_id.toString()).digest('hex'),
 			'balance': amount,
 			'bets': 0,
-			'wagered': amount,
+			'wagered': 0,
 			'name': client.users.get(user_id.toString()).username,
 			'admin': false,
 			'faucet': 0,
@@ -207,7 +203,6 @@ client.on('message', msg => {
 		} else if(command[0] == "refund") {
 			msg.reply("<:dab:359383950860484608>");
 		} else if(command[0] == "faucet") {
-			console.log(msg.author.id);
 			if(!(msg.author.id in db.users) || (new Date).getTime()-db.users[msg.author.id].faucet > 60*10*1000 || (Math.round(db.users[msg.author.id].balance) == 0 && (new Date).getTime()-db.users[msg.author.id].faucet > 60*1000)) {
 				msg.reply("Hier zijn je gratis 10 coins!")
 				updateBalance(msg.author.id,10);
@@ -243,14 +238,17 @@ client.on('message', msg => {
 });
 
 if(!fs.existsSync("db.json")) {
-	fs.writeFileSync("db.json",JSON.stringify({'users': {}, 'games': { 'jackpot': {} }, 'server_seed': 'do-not-use-this-seed'}, null, 2));
+	db = {'token': '', 'users': {}};
 	regenerateServerSeed(function() {
-		client.login(token);
+		fs.writeFile("db.json",JSON.stringify(db, null, 2),function() {
+			console.log("Voeg de Discord token toe aan db.json");
+			process.abort();
+		});
 	});
 } else {
 	fs.readFile("db.json",function(err,local_db) {
 		db = JSON.parse(local_db);
-		client.login(token);
+		client.login(db.token);
 	});
 }
 
