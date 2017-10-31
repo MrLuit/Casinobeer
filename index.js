@@ -5,6 +5,7 @@ const Random = require('random-js');
 const crypto = require('crypto');
 const fs = require('fs');
 const client = new Discord.Client();
+const token = "";
 var db = {};
 
 function randomWithProbability(probability,seed) {
