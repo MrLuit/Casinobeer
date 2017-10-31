@@ -47,7 +47,7 @@ function regenerateServerSeed(callback) {
 }
 
 function updateBalance(user_id,amount) {
-	user_id = parseInt(user_id.toString().replace(/\D/g,''));
+	user_id = user_id.toString().replace('<@','').replace('>');
 	if(user_id in db.users || user_id.toString() in db.users) {
 		db.users[user_id].balance += amount;
 	} else {
@@ -65,7 +65,6 @@ function updateBalance(user_id,amount) {
 }
 
 function getBalance(user_id) {
-	user_id = parseInt(user_id.toString().replace(/\D/g,''));
 	if(user_id in db.users) {
 		return db.users[user_id].balance;
 	} else {
@@ -89,8 +88,8 @@ client.on('message', msg => {
 	if(msg.content.startsWith("$") && ["363650292547584000","369717343292751873"].includes(msg.channel.id)) {
 		var command = msg.content.substr(1).split(" ");
 		if(command[0] == "balance") {
-			if(1 in command && 0 in Array.from(msg.mentions.users) && Array.from(msg.mentions.users)[0].length == 2) {
-				msg.reply(Array.from(msg.mentions.users)[0][1] + " heeft op dit moment " + getBalance(Array.from(msg.mentions.users)[0][1]).toFixed(2) + " coins");
+			if(1 in command && 0 in msg.mentions.users.array()) {
+				msg.reply("<@" + msg.mentions.users.array()[0].id + "> heeft op dit moment " + getBalance(msg.mentions.users.array()[0].id).toFixed(2) + " coins");
 			} else {
 				msg.reply("Je hebt op dit moment " + getBalance(msg.author.id).toFixed(2) + " coins");
 			}
@@ -141,11 +140,11 @@ client.on('message', msg => {
 				msg.reply("Je huidige seed is " + db.users[msg.author.id].client_seed);
 			}
 		} else if(command[0] == "tip") {
-			if(1 in command && !isNaN(parseFloat(command[1])) && parseFloat(command[1]) >= 0.01 && 0 in Array.from(msg.mentions.users) && Array.from(msg.mentions.users)[0].length == 2) {
+			if(1 in command && !isNaN(parseFloat(command[1])) && parseFloat(command[1]) >= 0.01 && 0 in msg.mentions.users.array()) {
 				if(getBalance(msg.author.id) >= parseFloat(command[1])) {
-					updateBalance(Array.from(msg.mentions.users)[0][1],parseFloat(command[1]));
+					updateBalance(msg.mentions.users.array()[0].id,parseFloat(command[1]));
 					updateBalance(msg.author.id,0-parseFloat(command[1]));
-					msg.reply("je hebt " + parseFloat(command[1]).toFixed(2) + " coins getipt aan " + Array.from(msg.mentions.users)[0][1] + "!");
+					msg.reply("je hebt " + parseFloat(command[1]).toFixed(2) + " coins getipt aan <@" + msg.mentions.users.array()[0].id + ">!");
 				} else {
 					msg.reply("Je hebt niet genoeg coins.");
 				}
@@ -177,9 +176,9 @@ client.on('message', msg => {
 			}
 		} else if(command[0] == "supertip") {
 			if(isAdmin(msg.author)) {
-				if(1 in command && !isNaN(parseFloat(command[1])) && parseFloat(command[1]) >= 0.01 && 0 in Array.from(msg.mentions.users) && Array.from(msg.mentions.users)[0].length == 2) {
-					updateBalance(Array.from(msg.mentions.users)[0][1],parseFloat(command[1]));
-					msg.reply("je hebt " + parseFloat(command[1]).toFixed(2) + " coins getipt aan " + Array.from(msg.mentions.users)[0][1] + "!");
+				if(1 in command && !isNaN(parseFloat(command[1])) && parseFloat(command[1]) >= 0.01 && 0 in msg.mentions.users.array()) {
+					updateBalance(msg.mentions.users.array()[0].id,parseFloat(command[1]));
+					msg.reply("je hebt " + parseFloat(command[1]).toFixed(2) + " coins getipt aan <@" + msg.mentions.users.array()[0].id + ">!");
 				} else {
 					msg.reply("Gebruik het commando op deze manier: `$tip 1 @User`")
 				}
