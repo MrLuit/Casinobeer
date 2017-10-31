@@ -178,12 +178,8 @@ client.on('message', msg => {
 		} else if(command[0] == "supertip") {
 			if(isAdmin(msg.author)) {
 				if(1 in command && !isNaN(parseFloat(command[1])) && parseFloat(command[1]) >= 0.01 && 0 in Array.from(msg.mentions.users) && Array.from(msg.mentions.users)[0].length == 2) {
-					if(Array.from(msg.mentions.users)[0][1].toString().replace(/\D/g,'') == msg.author.id) {
-						msg.reply("je kunt niet aan jezelf tippen");
-					} else {
-						updateBalance(Array.from(msg.mentions.users)[0][1],parseFloat(command[1]));
-						msg.reply("je hebt " + parseFloat(command[1]).toFixed(2) + " coins getipt aan " + Array.from(msg.mentions.users)[0][1] + "!");
-					}
+					updateBalance(Array.from(msg.mentions.users)[0][1],parseFloat(command[1]));
+					msg.reply("je hebt " + parseFloat(command[1]).toFixed(2) + " coins getipt aan " + Array.from(msg.mentions.users)[0][1] + "!");
 				} else {
 					msg.reply("Gebruik het commando op deze manier: `$tip 1 @User`")
 				}
