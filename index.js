@@ -126,10 +126,11 @@ client.on('message', msg => {
         } else if (command[0] == "flip") {
             if (1 in command && !isNaN(parseUserAmount(msg.author,command[1])) && parseUserAmount(msg.author,command[1]) >= 0.01) {
                 if (getBalance(msg.author.id) >= parseUserAmount(msg.author,command[1])) {
-                    if (registerBet(msg.author, 0.5, parseUserAmount(msg.author,command[1])).won) {
-                        msg.reply("Gefeliciteerd! Je hebt " + intToText(parseUserAmount(msg.author,command[1])) + " coins gewonnen");
+					var amount = parseUserAmount(msg.author,command[1]);
+                    if (registerBet(msg.author, 0.5, amount).won) {
+                        msg.reply("Gefeliciteerd! Je hebt " + intToText(amount) + " coins gewonnen");
                     } else {
-                        msg.reply("Je hebt " + intToText(parseUserAmount(msg.author,command[1])) + " coins verloren");
+                        msg.reply("Je hebt " + intToText(amount) + " coins verloren");
                     }
                 } else {
                     msg.reply("Je hebt niet genoeg coins.");
@@ -139,11 +140,12 @@ client.on('message', msg => {
             }
         } else if (command[0] == "dice") {
             if (1 in command && !isNaN(parseUserAmount(msg.author,command[1])) && parseUserAmount(msg.author,command[1]) >= 0.01) {
-                if (getBalance(msg.author.id) >= parseUserAmount(msg.author,command[1])) {
-                    if (registerBet(msg.author, (1 / 6), parseUserAmount(msg.author,command[1])).won) {
-                        msg.reply("Gefeliciteerd! Je hebt " + intToText(parseUserAmount(msg.author,command[1]) * 6) + " coins gewonnen");
+				var amount = parseUserAmount(msg.author,command[1]);
+                if (getBalance(msg.author.id) >= amount) {
+                    if (registerBet(msg.author, (1 / 6), amount).won) {
+                        msg.reply("Gefeliciteerd! Je hebt " + intToText(amount * 6) + " coins gewonnen");
                     } else {
-                        msg.reply("Je hebt " + intToText(parseUserAmount(msg.author,command[1])) + " coins verloren");
+                        msg.reply("Je hebt " + intToText(amount) + " coins verloren");
                     }
                 } else {
                     msg.reply("Je hebt niet genoeg coins.");
@@ -171,11 +173,12 @@ client.on('message', msg => {
             }
         } else if (command[0] == "tip") {
             if (1 in command && !isNaN(parseUserAmount(msg.author,command[1])) && parseUserAmount(msg.author,command[1]) >= 0.01 && 0 in msg.mentions.users.array()) {
-                if (getBalance(msg.author.id) >= parseUserAmount(msg.author,command[1])) {
+				var amount = parseUserAmount(msg.author,command[1]);
+                if (getBalance(msg.author.id) >= amount) {
 					if(!client.users.get(msg.mentions.users.array()[0].id.toString()).bot) {
-						updateBalance(msg.mentions.users.array()[0].id, parseUserAmount(msg.author,command[1]));
-						updateBalance(msg.author.id, 0 - parseUserAmount(msg.author,command[1]));
-						msg.reply("je hebt " + intToText(parseUserAmount(msg.author,command[1])) + " coins getipt aan <@" + msg.mentions.users.array()[0].id + ">!");
+						updateBalance(msg.mentions.users.array()[0].id, amount);
+						updateBalance(msg.author.id, 0 - amount);
+						msg.reply("je hebt " + intToText(amount) + " coins getipt aan <@" + msg.mentions.users.array()[0].id + ">!");
 					} else {
 						msg.reply("wat heeft die bot nou daaraan joh");
 					}
@@ -187,13 +190,14 @@ client.on('message', msg => {
             }
 		} else if(command[0] == "burn") {
 			if (1 in command && !isNaN(parseUserAmount(msg.author,command[1])) && parseUserAmount(msg.author,command[1]) > 0.01) {
-                if (getBalance(msg.author.id) >= parseUserAmount(msg.author,command[1])) {
-                    updateBalance(msg.author.id, 0 - parseUserAmount(msg.author,command[1].replace('oneindig','Infinity')));
+				var amount = parseUserAmount(msg.author,command[1]);
+                if (getBalance(msg.author.id) >= amount) {
+                    updateBalance(msg.author.id, 0 - amount);
 					if(!('burned' in db.users[msg.author.id])) {
 						db.users[msg.author.id].burned = 0;
 					}
-					db.users[msg.author.id].burned += parseUserAmount(msg.author,command[1]);
-                    msg.reply("je hebt " + intToText(parseUserAmount(msg.author,command[1])) + " coins geburnt!");
+					db.users[msg.author.id].burned += amount;
+                    msg.reply("je hebt " + intToText(amount) + " coins geburnt!");
                 } else {
                     msg.reply("Je hebt niet genoeg coins.");
                 }
@@ -225,9 +229,10 @@ client.on('message', msg => {
             }
         } else if (command[0] == "supertip") {
             if (isAdmin(msg.author)) {
-                if (1 in command && !isNaN(parseUserAmount(msg.author,command[1])) && 0 in msg.mentions.users.array()) {
-                    updateBalance(msg.mentions.users.array()[0].id, parseUserAmount(msg.author,command[1].replace('oneindig','Infinity')));
-                    msg.reply("je hebt " + intToText(parseUserAmount(msg.author,command[1])) + " coins getipt aan <@" + msg.mentions.users.array()[0].id + ">!");
+				var amount = parseUserAmount(msg.author,command[1]);
+                if (1 in command && !isNaN(amount) && 0 in msg.mentions.users.array()) {
+                    updateBalance(msg.mentions.users.array()[0].id, amount);
+                    msg.reply("je hebt " + intToText(amount) + " coins getipt aan <@" + msg.mentions.users.array()[0].id + ">!");
                 } else {
                     msg.reply("Gebruik het commando op deze manier: `$supertip 1 @User`")
                 }
