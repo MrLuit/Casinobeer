@@ -119,7 +119,7 @@ client.on('message', msg => {
         var command = msg.content.substr(1).split(" ");
         if (command[0] == "balance" || command[0] == "bal" || command[0] == "coins" || command[0] == "amount") {
             if (1 in command && 0 in msg.mentions.users.array()) {
-                msg.reply("<@" + msg.mentions.users.array()[0].id + "> heeft op dit moment " + intToText(msg.mentions.users.array()[0].id) + " coins");
+                msg.reply("<@" + msg.mentions.users.array()[0].id + "> heeft op dit moment " + intToText(getBalance(msg.mentions.users.array()[0].id)) + " coins");
             } else {
                 msg.reply("Je hebt op dit moment " + intToText(getBalance(msg.author.id)) + " coins");
             }
