@@ -92,8 +92,14 @@ function parseUserAmount(user,text) {
 			return db.users[user.id].balance;
 		} else if(text == 'helft') {
 			return db.users[user.id].balance/2;
-		} else if(text.indexOf('%') > -1 && !isNaN(parseFloat(text.replace('%',''))) && parseFloat(text.replace('%','')) > 0 && parseFloat(text.replace('%','')) < 100) {
-			return (parseFloat(text.replace('%',''))/100)*db.users[user.id].balance;
+		} else if(text == 'π' || text == 'pi') {
+			return Math.PI;
+		} else if(text.indexOf('%') > -1 && !isNaN(parseFloat(text.replace('%','')))) {
+			if(parseFloat(text.replace('%','')) > 0 && parseFloat(text.replace('%','')) < 100) {
+				return (parseFloat(text.replace('%',''))/100)*db.users[user.id].balance;
+			} else {
+				return 0;
+			}
 		} else {
 			return parseFloat(text);
 		}
