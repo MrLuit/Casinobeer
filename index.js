@@ -227,6 +227,8 @@ client.on('message', msg => {
             } else {
                 msg.reply("Geen bets om te bewijzen");
             }
+		} else if (command[0] == "serverseed") {
+			msg.reply("De gehashte serverseed op dit moment is **" + crypto.createHash('sha256').update(db.server_seed).digest('hex') + "** (SHA-256).\nDoe $proof om de serverseed te onthullen en een nieuwe te genereren.");
         } else if (command[0] == "jackpot") {
             if (1 in command) {
 

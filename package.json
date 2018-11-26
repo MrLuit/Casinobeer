@@ -12,6 +12,6 @@
     "dateformat": "^3.0.2",
     "discord.js": "^11.2.1",
     "random-js": "^1.0.8",
-    "request": "^2.83.0"
+    "request": "^2.88.0"
   }
 }
